@@ -77,3 +77,24 @@ Poi, a ogni versione:
 La chiave di firma viene creata alla prima build e conservata nella release privata **chiave-firma**: non cancellarla, altrimenti per aggiornare l'app dovrai prima disinstallarla. L'APK contiene solo la versione per telefoni a 64 bit (la quasi totalità).
 
 Le notifiche push su Android richiedono in più la configurazione di Firebase (file `google-services.json`): finché non c'è, l'app funziona ma non registra il telefono per le notifiche.
+
+## Demo online per il cliente (Cloudflare, gratis)
+
+La cartella `demo/` costruisce una versione web dell'app con **dati finti**: non si collega a Supabase, quindi non tocca né mostra dati veri e nessuna prenotazione viene salvata. Serve per far vedere l'app al cliente da un indirizzo pubblico, senza installare nulla.
+
+- **Cosa si vede:** schermata di benvenuto, Cliente, Titolare e Barbiere (pulsanti in alto), in cornice telefono o a tutto schermo come sul computer, con tema Auto, Chiaro o Scuro. Dal telefono la demo si apre a schermo intero.
+- **Orologio:** la data è quella di oggi, ma l'ora parte sempre alle 10:40, così l'agenda «Sede» mostra appuntamenti già fatti, in corso e ancora liberi a qualunque ora la si apra.
+- **Dati finti:** stanno in `demo/mock/supabase.ts` (sedi, barbieri, servizi, appuntamenti, ordini). Se l'app comincia a usare tabelle o funzioni nuove e nella demo compaiono schermate vuote, si aggiunge il dato lì.
+- **Non compare su Google:** la demo ha `noindex` e `robots.txt` che vieta l'indicizzazione.
+- **Costruirla a mano:** `cd demo && npm install && node build.mjs`, poi si apre `demo/dist/index.html` da un piccolo server (per esempio `npx serve demo/dist`).
+
+Pubblicarla su Cloudflare (una volta sola):
+
+1. Su dash.cloudflare.com vai in **Workers & Pages**, poi **Create**, **Import a repository** e scegli `DFBarber` (ramo `main`).
+2. Nome del progetto: `df-barbershop-demo`. Cartella principale: lascia `/`.
+3. **Build command:** `cd demo && npm install && node build.mjs`
+4. **Deploy command:** `npx wrangler deploy` (usa `wrangler.jsonc` nella radice del repo).
+5. Salva e distribuisci. L'indirizzo è `https://df-barbershop-demo.<tuo-account>.workers.dev`. Da quel momento ogni push su `main` aggiorna la demo da solo.
+6. Facoltativo: in **Settings, Domains & Routes** puoi aggiungere un dominio tuo, per esempio `dfdemo.kernastudio.com`.
+
+La demo non fa parte dell'app per i telefoni: la build Android e quella per l'App Store non la usano.
